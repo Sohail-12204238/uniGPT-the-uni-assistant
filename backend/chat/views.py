@@ -21,8 +21,11 @@ def ChatAPIView(request):
         if not question:
             return JsonResponse({"error": "No question provided"}, status=400)
 
-        result = answer_question(question)
-        # result already contains answer, pdf_sources, web_sources, from_web
-        return JsonResponse(result, status=200)
+        try:
+            result = answer_question(question)
+            return JsonResponse(result, status=200)
+        except Exception as e:
+            print("RAG ERROR:", str(e))
+            return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
