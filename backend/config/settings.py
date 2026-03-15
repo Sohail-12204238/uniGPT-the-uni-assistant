@@ -13,10 +13,7 @@ SECRET_KEY = "django-insecure-uni-assistant-dev-key-change-before-prod"
 
 DEBUG = True  # Keep TRUE for development
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1"
-]
+ALLOWED_HOSTS = ["*"]
 
 # -------------------------------------------------------------
 # INSTALLED APPS
