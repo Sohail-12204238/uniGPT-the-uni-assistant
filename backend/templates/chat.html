@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>uniGPT – University Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="page-bg">
+    <div class="app-shell">
+      <!-- Sidebar: Conversation History -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-title">History</span>
+          <button id="new-chat-btn" class="new-chat-btn" type="button">
+            + New
+          </button>
+        </div>
+        <div id="history-list" class="history-list">
+          <!-- Conversations will be injected here -->
+        </div>
+      </aside>
+
+      <!-- Main Chat Card -->
+      <div class="chat-shell">
+        <div class="chat-header">
+  <div class="header-logo">
+    <img src="/static/lpu-logo.png" alt="LPU Logo" class="logo-img" />
+    <span class="chat-title">uniGPT</span>
+  </div>
+
+  <div class="header-actions">
+    <button
+      id="download-chat"
+      class="header-icon-btn"
+      type="button"
+      title="Download this chat"
+    >
+      ⬇
+    </button>
+    <button
+      id="theme-toggle"
+      class="header-icon-btn theme-toggle"
+      type="button"
+      aria-label="Toggle light/dark mode"
+    >
+      ☀
+    </button>
+  </div>
+</div>
+
+
+        <div id="chat-window" class="chat-window"></div>
+
+        <!-- Typing indicator -->
+        <div id="typing-indicator" class="typing-indicator hidden">
+  <div class="avatar avatar-bot avatar-typing"></div>
+  <div class="typing-bubble">
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+</div>
+
+
+        <div class="chat-input-bar">
+          <input
+            id="user-input"
+            type="text"
+            placeholder="Type your message..."
+            autocomplete="off"
+          />
+          <button id="mic-btn" class="icon-btn" type="button" title="Speak">
+            🎤
+          </button>
+          <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
