@@ -136,7 +136,6 @@ rpds-py==0.30.0
 safehttpx==0.1.7
 safetensors==0.7.0
 scikit-learn==1.7.2
-scipy==1.15.3
 semantic-version==2.10.0
 Send2Trash==1.8.3
 sentence-transformers==5.1.2
@@ -148,7 +147,6 @@ SQLAlchemy==2.0.44
 sqlparse==0.5.4
 stack-data==0.6.3
 starlette==0.50.0
-sympy==1.14.0
 tavily-python==0.7.14
 tenacity==9.1.2
 terminado==0.18.1
