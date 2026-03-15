@@ -54,11 +54,11 @@ _tavily_client = None
 def get_llm():
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
-        raise RuntimeError("GROQ_API_KEY not set")
+        raise Exception("GROQ_API_KEY missing in environment variables")
 
     return ChatGroq(
         groq_api_key=api_key,
-        model_name="llama-3.1-8b-instant",   # best balance for RAG
+        model_name="llama-3.1-8b-instant",
         temperature=0.3,
         max_tokens=500,
     )
@@ -113,41 +113,43 @@ def web_search_fallback(question: str):
 # ---------------------------------------------------
 
 def answer_question(question: str) -> dict:
-    """
-    Answer a question using:
-      1) University PDFs via Qdrant retriever
-      2) Tavily web fallback if needed
-    """
-    retriever = get_retriever()
-    docs = retriever.invoke(question)
+    try:
+        retriever = get_retriever()
+        docs = retriever.invoke(question)
 
-    context = "\n\n".join(d.page_content for d in docs) if docs else ""
+        context = "\n\n".join(d.page_content for d in docs) if docs else ""
 
-    pdf_sources: list[str] = []
-    for d in docs:
-        src = d.metadata.get("source", "unknown file")
-        page = d.metadata.get("page", "?")
-        pdf_sources.append(f"{src} (page {page})")
+        pdf_sources = []
+        for d in docs:
+            src = d.metadata.get("source", "unknown file")
+            page = d.metadata.get("page", "?")
+            pdf_sources.append(f"{src} (page {page})")
 
-    llm = get_llm()
-    formatted = prompt.invoke({"context": context, "input": question})
-    result = llm.invoke(formatted)
-    answer = result.content
+        llm = get_llm()
+        formatted = prompt.invoke({"context": context, "input": question})
+        result = llm.invoke(formatted)
+        answer = result.content
 
-    from_web = False
-    web_sources: list[str] = []
+        from_web = False
+        web_sources = []
 
-    # Force Tavily if:
-    # - no docs from Qdrant, OR
-    # - model says "not in guidelines"
-    if not docs or (FALLBACK_PHRASE and FALLBACK_PHRASE in answer):
-        from_web = True
-        web_answer, web_sources = web_search_fallback(question)
-        answer = f"{web_answer}\n\n(Note: This answer is from web search, not university PDFs.)"
+        if not docs or (FALLBACK_PHRASE and FALLBACK_PHRASE in answer):
+            from_web = True
+            web_answer, web_sources = web_search_fallback(question)
+            answer = f"{web_answer}\n\n(Note: This answer is from web search, not university PDFs.)"
 
-    return {
-        "answer": answer,
-        "pdf_sources": pdf_sources,
-        "web_sources": web_sources,
-        "from_web": from_web,
-    }
+        return {
+            "answer": answer,
+            "pdf_sources": pdf_sources,
+            "web_sources": web_sources,
+            "from_web": from_web,
+        }
+
+    except Exception as e:
+        print("RAG ERROR:", e)   # shows error in Render logs
+        return {
+            "answer": f"Server error: {str(e)}",
+            "pdf_sources": [],
+            "web_sources": [],
+            "from_web": False,
+        }
