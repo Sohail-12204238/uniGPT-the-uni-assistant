@@ -1,25 +1,29 @@
+import os
+os.environ["TRANSFORMERS_NO_TF"] = "1"
+
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
-from langchain_core.embeddings import Embeddings
 
-from .config import QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION
+from .config import QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION, EMBED_MODEL
 
-
-class DummyEmbeddings(Embeddings):
-    """
-    We don't generate embeddings here.
-    Qdrant already stores vectors.
-    """
-
-    def embed_documents(self, texts):
-        raise NotImplementedError("Document embedding not supported")
-
-    def embed_query(self, text):
-        raise NotImplementedError("Query embedding handled by external system")
-
-
+_embeddings = None
 _vector_store = None
 _retriever = None
+
+
+def get_embeddings():
+    global _embeddings
+
+    if _embeddings is None:
+        print("Loading embedding model once...")
+
+        _embeddings = HuggingFaceEmbeddings(
+            model_name=EMBED_MODEL,
+            encode_kwargs={"normalize_embeddings": False},
+        )
+
+    return _embeddings
 
 
 def get_retriever():
@@ -34,10 +38,12 @@ def get_retriever():
         prefer_grpc=False,
     )
 
+    embeddings = get_embeddings()
+
     _vector_store = QdrantVectorStore(
         client=client,
         collection_name=QDRANT_COLLECTION,
-        embedding=DummyEmbeddings(),   # 👈 lightweight
+        embedding=embeddings,
     )
 
     _retriever = _vector_store.as_retriever(
