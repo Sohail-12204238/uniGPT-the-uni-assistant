@@ -13,3 +13,6 @@ tavily-python
 
 python-dotenv
 whitenoise
+
+langchain-huggingface
+sentence-transformers
