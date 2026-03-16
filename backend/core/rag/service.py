@@ -53,8 +53,9 @@ _tavily_client = None
 
 def get_llm():
     api_key = os.getenv("GROQ_API_KEY")
+
     if not api_key:
-        raise Exception("GROQ_API_KEY missing in environment variables")
+        raise Exception("Missing GROQ_API_KEY")
 
     return ChatGroq(
         groq_api_key=api_key,
