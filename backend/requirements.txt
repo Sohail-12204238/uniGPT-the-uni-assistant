@@ -1,4 +1,4 @@
-Django
+Django>=4.2,<6
 django-cors-headers
 djangorestframework
 
@@ -7,12 +7,12 @@ langchain-core
 langchain-community
 langchain-groq
 langchain-qdrant
+langchain-huggingface
+
+sentence-transformers
 
 qdrant-client
 tavily-python
 
 python-dotenv
 whitenoise
-
-langchain-huggingface
-sentence-transformers
